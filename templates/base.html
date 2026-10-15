@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Source Ledger</title>
+    <style>
+        :root { --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --accent: #38bdf8; --danger: #ef4444; --success: #22c55e; }
+        body { font-family: monospace; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        nav { display: flex; justify-content: space-between; border-bottom: 1px solid #334155; padding-bottom: 12px; margin-bottom: 24px; }
+        nav a { color: var(--accent); text-decoration: none; margin-right: 16px; font-weight: bold; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+        .card { background: var(--card); border: 1px solid #334155; padding: 16px; border-radius: 6px; }
+        .card.distress { border: 2px solid var(--danger); background: #2a1215; }
+        .badge-distress { background: var(--danger); color: #fff; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em; }
+        .badge-ok { background: #1e3a2f; color: var(--success); border: 1px solid var(--success); padding: 3px 8px; border-radius: 4px; font-size: 0.85em; }
+        .alert { padding: 12px; border-radius: 4px; margin-bottom: 20px; font-weight: bold; }
+        .alert.danger { background: var(--danger); color: white; }
+        .alert.success { background: #14532d; color: #bbf7d0; border: 1px solid var(--success); }
+        input, select, button { font-family: monospace; padding: 8px; border-radius: 4px; border: 1px solid #475569; background: #0f172a; color: white; margin-top: 6px; }
+        button { background: var(--accent); color: #0f172a; font-weight: bold; cursor: pointer; border: none; }
+        button.btn-danger { background: var(--danger); color: white; }
+        .meta { color: #94a3b8; font-size: 0.9em; margin: 6px 0; }
+        details { margin-top: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div>
+            <a href="{{ url_for('dashboard') }}">[ DASHBOARD ]</a>
+            <a href="{{ url_for('admin') }}">[ ADMIN PANEL ]</a>
+        </div>
+        <form method="POST" action="{{ url_for('lock_vault') }}" style="display: inline; margin: 0;">
+            <button type="submit" style="background: none; border: 1px solid #475569; color: var(--accent); padding: 4px 8px;">[ LOCK VAULT ]</button>
+        </form>
+        {% if session.get('logged_in') %}
+            <a href="{{ url_for('logout') }}">[ LOCK SESSION ]</a>
+        {% endif %}
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+</body>
+</html>

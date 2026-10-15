@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Active Contacts Dashboard</h2>
+<div class="grid">
+    {% for c in contacts %}
+    <div class="card {% if c.in_distress %}distress{% endif %}" id="contact-{{ c.id }}">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0;">{{ c.name }}</h3>
+            {% if c.in_distress %}
+                <span class="badge-distress">DISTRESS / COMPROMISED</span>
+            {% else %}
+                <span class="badge-ok">ACTIVE</span>
+            {% endif %}
+        </div>
+
+        <p class="meta"><strong>Contact No:</strong> {{ c.phone }}</p>
+        <p class="meta"><strong>Meet Point:</strong> {{ c.address }}</p>
+
+        <details>
+            <summary style="color: var(--accent); font-size: 0.85em;">Reveal 12-Digit Code</summary>
+            <p style="letter-spacing: 2px; font-weight: bold; margin: 6px 0;">{{ c.auth_code }}</p>
+        </details>
+
+        <hr style="border: 0; border-top: 1px solid #334155; margin: 12px 0;">
+        
+        <strong>Linked Contacts:</strong>
+        <ul style="padding-left: 18px; margin: 6px 0; font-size: 0.9em;">
+            {% for rel in c.get_all_relationships() %}
+                <li>
+                    <a href="#contact-{{ rel.contact.id }}" style="color: var(--accent);">{{ rel.contact.name }}</a> 
+                    — <em>{{ rel.note }}</em>
+                    {% if rel.contact.in_distress %}
+                        <span style="color: var(--danger); font-weight: bold;">(! IN DISTRESS)</span>
+                    {% endif %}
+                </li>
+            {% else %}
+                <li style="color: #64748b;">No linked contacts.</li>
+            {% endfor %}
+        </ul>
+
+        <hr style="border: 0; border-top: 1px solid #334155; margin: 12px 0;">
+
+        <form method="POST" action="{{ url_for('verify_code', contact_id=c.id) }}" style="display: flex; gap: 8px;">
+            <input type="text" name="code" placeholder="Enter 12-digit code..." maxlength="12" required style="flex: 1; margin: 0;">
+            <button type="submit" style="margin: 0;">Verify</button>
+        </form>
+    </div>
+    {% else %}
+    <p>No sources recorded yet. Use the <a href="{{ url_for('admin') }}" style="color: var(--accent);">Admin Panel</a> to add contacts.</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid">
+    <!-- Add Contact Form -->
+    <div class="card">
+        <h3>1. Enroll New Source</h3>
+        <form method="POST">
+            <input type="hidden" name="action" value="add_contact">
+            <label>Handle / Alias:</label><br>
+            <input type="text" name="name" required style="width: 94%;"><br><br>
+            
+            <label>Contact Number / Signal ID:</label><br>
+            <input type="text" name="phone" required style="width: 94%;"><br><br>
+            
+            <label>Safe Meeting Address / Coordinates:</label><br>
+            <input type="text" name="address" required style="width: 94%;"><br><br>
+            
+            <label>Personal 12-Digit Code (Numbers Only):</label><br>
+            <input type="text" name="auth_code" pattern="\d{12}" maxlength="12" placeholder="e.g. 491029384756" required style="width: 94%;"><br><br>
+            
+            <button type="submit">Save Encrypted Contact</button>
+        </form>
+    </div>
+
+    <!-- Link Relationship Form -->
+    <div class="card">
+        <h3>2. Link Contact Relationship</h3>
+        <form method="POST">
+            <input type="hidden" name="action" value="add_relation">
+            <label>Primary Contact:</label><br>
+            <select name="source_id" required style="width: 98%;">
+                {% for c in contacts %}
+                    <option value="{{ c.id }}">{{ c.name }}</option>
+                {% endfor %}
+            </select><br><br>
+
+            <label>Linked Contact:</label><br>
+            <select name="target_id" required style="width: 98%;">
+                {% for c in contacts %}
+                    <option value="{{ c.id }}">{{ c.name }}</option>
+                {% endfor %}
+            </select><br><br>
+
+            <label>Relationship Context:</label><br>
+            <input type="text" name="note" placeholder="e.g. Same dept, Vouched for by..." required style="width: 94%;"><br><br>
+
+            <button type="submit">Link Relationship</button>
+        </form>
+    </div>
+</div>
+
+<h3 style="margin-top: 32px;">Manage Existing Contacts</h3>
+<div class="grid">
+    {% for c in contacts %}
+    <div class="card">
+        <strong>{{ c.name }}</strong> (Code: <code>{{ c.auth_code }}</code>)
+        <div style="margin-top: 12px; display: flex; gap: 10px;">
+            {% if c.in_distress %}
+            <form method="POST" action="{{ url_for('clear_distress', contact_id=c.id) }}">
+                <button type="submit">Clear Distress Flag</button>
+            </form>
+            {% endif %}
+            <form method="POST" onsubmit="return confirm('Permanently delete this contact and its links?');">
+                <input type="hidden" name="action" value="delete_contact">
+                <input type="hidden" name="contact_id" value="{{ c.id }}">
+                <button type="submit" class="btn-danger">Burn / Delete</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

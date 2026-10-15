@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card" style="max-width: 440px; margin: 60px auto;">
+    <h3 style="margin-top: 0;">Vault Locked</h3>
+    <p style="color: #94a3b8; font-size: 0.9em;">
+        Paste your Fernet Key to decrypt the source ledger into server RAM.
+    </p>
+    <form method="POST">
+        <label>Master Fernet Key:</label><br>
+        <input type="password" name="master_key" placeholder="44-character base64 key" required style="width: 95%;"><br><br>
+        <button type="submit" style="width: 100%;">Unlock Ledger</button>
+    </form>
+</div>
+{% endblock %}
